@@ -19,14 +19,22 @@ export class Student extends Component {
                 msg : '',
                 type : ''
             },
-            students : []
+            students : [{id : 1}],
+            dataId: null,
+            student : {
+                id : '',
+                name : '',
+                cell : '',
+                photo : ''
+            }
+            
         }
     }
 
 
   render() {
 
-    const { modal, students } = this.state;
+    const { modal, students, dataId, student} = this.state;
     const { type, msg, status  } = this.state.alert;
 
     const getAllStudentsData = () => {
@@ -46,8 +54,6 @@ export class Student extends Component {
 
     getAllStudentsData();
  
-
-
 
     const handleModalShow = () => { 
         this.setState({
@@ -94,30 +100,71 @@ export class Student extends Component {
         });
 
     }
+    //data edit modal
+
+    const handleDataEdit = (e, id) => {
+        e.preventDefault();
+
+        let edit = students.find( data => data.id === id)
+
+        this.setState((prevState) => ({
+            ...prevState,
+            modal : {
+                status : true,
+                type : 'edit'
+            },
+            student : edit
+        }))
+
+    }
+
     //show single student data
 
-    const handleStudentSingleModal = () => {
-        this.setState({
-            ...this.state,
-            modal : {
-                status: true,
-                type: 'show'
-            }
-        });
+    const handleStudentSingleModal = (e, id) => {
+        e.preventDefault();
 
+        let single = students.find( (data) => data.id === id);
+        
+
+
+        this.setState((prevState) => ({
+            ...prevState,
+            modal : {
+                status : true,
+                type : 'show'
+            },
+            student : single
+            
+        }));
     }
+    
 
     //
-    const handleModalAlert = () =>{
-        this.setState({
-            ...this.state,
-            modal : {
-                status: true,
-                type: 'alert'
-            }
-        });
+    const handleModalAlert = (e, id) =>{
+        e.preventDefault();
 
+        this.setState((prevState) => ({
+            ...prevState,
+            modal : {
+                status : true,
+                type : 'alert'
+            },
+            dataId : id
+        }));
     }
+
+    //student single data handler
+
+    const handleStudentData = (obj) => {
+        
+        this.setState((prevState) => ({
+            ...prevState,
+            student : obj
+
+        }));
+        
+    }
+    
 
     return (
 
@@ -125,7 +172,7 @@ export class Student extends Component {
         <Row className='justify-content-center my-5'>
             <Col md ={6}>
             <Button onClick={ handleModalShow } variant={'primary'}>Add New Student</Button>
-            <StudentModal show= { modal.status } handleModalHide ={handleModalHide} type = { modal.type }/>
+            <StudentModal handleStudentData={handleStudentData} student={student} dataId={dataId} show= { modal.status } handleModalHide ={handleModalHide} type = { modal.type }/>
             <br />
             <br />
             {
@@ -135,7 +182,6 @@ export class Student extends Component {
             
                 <Card className='shadow'>
                     <Card.Body>
-                        
                         <Table>
                             <thead>
                                 <tr>
@@ -154,9 +200,9 @@ export class Student extends Component {
                                             <td>{data.cell}</td>
                                             <td><img style={{width: '60px', height: '60px'}} src= {data.photo} alt="" /></td>
                                             <td>
-                                                <a onClick={ handleStudentSingleModal } className='btn btn-sm btn-info' href="#">View</a> &nbsp;
-                                                <a className='btn btn-sm btn-warning'href="">Edit</a> &nbsp;
-                                                <a onClick= { handleModalAlert } className='btn btn-sm btn-danger'href="#">Delete</a>
+                                                <a onClick={ e => handleStudentSingleModal(e, data.id) } className='btn btn-sm btn-info' href="#">View</a> &nbsp;
+                                                <a onClick={ e => handleDataEdit(e, data.id) } className='btn btn-sm btn-warning'href="">Edit</a> &nbsp;
+                                                <a onClick= { e => handleModalAlert(e, data.id) } className='btn btn-sm btn-danger'href="#">Delete</a>
                                             </td>
                                         </tr>
                                         )
